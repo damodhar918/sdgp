@@ -39,6 +39,7 @@ To run the script, you need to provide some arguments:
 - `csv_file`: The CSV file name. A string value that specifies the name of the CSV file to read if there or to write output.
 - `conf_csv_file`: The configuration CSV file name. A string value that specifies the name of the configuration CSV file to read. This argument is required if mode is `e` or `g`.
 Example configuration file:
+
 | name          | type               | values                                                  |
 | ------------- | ------------------ | ------------------------------------------------------- |
 | id1           | uniqueIndex        | 800000000                                               |
@@ -57,6 +58,7 @@ Example configuration file:
 | zip_code      | regexPattern       | ([4-9]{5})                                              |
 | email_address | regexPattern       | ([a-zA-Z0-9]{1,10})\@[a-z]{1,5}\.(com\|net\|org\|in)    |
 | compositeKey  | composite          | dateRange1 \| model1 \|number1 \|phone_number\|zip_code |
+
 ```bash
 name,type,values
 id1,uniqueIndex,800000000
