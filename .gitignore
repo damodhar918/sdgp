@@ -6,8 +6,10 @@ __pycache__/
 *.ipynb
 # C extensions
 *.so
-
+#outuput
+*0.csv
 # Distribution / packaging
+.github
 .Python
 env/
 build/

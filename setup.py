@@ -28,7 +28,8 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="synthetic data generator plus can help data developer to generate real data",
+    description="synthetic data generator plus can help \
+        a data developer to generate real data",
     entry_points={
         'console_scripts': [
             'sdgp=sdgp.cli:main',
