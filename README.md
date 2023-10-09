@@ -1,5 +1,5 @@
 ## Utilization [Synthetic data generator plus]() Project
-For questions on this package contact the package Developer Damodhar Jangam at 
+For questions on this package contact the package Developer Damodhar Jangam at
 ## Overview
 This project [Synthetic data generator plus]() is a python script that generates mock data based on given configurations. It can also edit and scale existing data to create high volume data. It is useful for testing and prototyping purposes.
 ## Features
@@ -16,7 +16,7 @@ Go through the following sequence:
 ```bash
 PS > python -m venv .venv
 PS > .\.venv\Scripts\activate
-PS > pip install -r requirements.txt 
+PS > pip install -r requirements.txt
 PS > deactivate # when you need exit
 ```
 ### Install on a edge node (optional)
@@ -25,8 +25,8 @@ Go through the following sequence:
 - Create a virtual environment and install the package
 ```bash
 $ python3 -m venv .venv
-$ source env/bin/activate
-$ pip install -r requirements.txt 
+$ source .venv/bin/activate
+$ pip install -r requirements.txt
 $ deactivate # when you need exit
 ```
 At that point you're good to go and the package `Synthetic data generater plus` and its module will be
@@ -111,16 +111,16 @@ To run the script, use the following command:
 # python main.py -c <choice> <volume> <format> <csv_file> <conf_csv_file>
 #
 # positional arguments:
-#   volume                The size. An integer value that specifies how many rows to generate mock data. Recommended      
+#   volume                The size. An integer value that specifies how many rows to generate mock data. Recommended
 #                         minimum value is more than volume size or more than 1000.
-#   {csv,parquet}         The type of format to save the mock data. csv for CSV format, parquet for Parquet format.       
-#   csv_file              The CSV file name. A string value that specifies the name of the CSV file to read or write.     
-#   conf_csv_file         The configuration CSV file name. A string value that specifies the name of the configuration    
+#   {csv,parquet}         The type of format to save the mock data. csv for CSV format, parquet for Parquet format.
+#   csv_file              The CSV file name. A string value that specifies the name of the CSV file to read or write.
+#   conf_csv_file         The configuration CSV file name. A string value that specifies the name of the configuration
 #                         CSV file to read. This argument is required if mode is e or g.
 # options:
 #   -h, --help            show this help message and exit
 #   -c {m,e,g}, --choice {m,e,g}
-#                         The type of function to select. m for mock data, e for edit mock data, g for generate high      
+#                         The type of function to select. m for mock data, e for edit mock data, g for generate high
 #                         volume data.
 ```
 For example:
