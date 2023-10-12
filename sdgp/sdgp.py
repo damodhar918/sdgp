@@ -204,6 +204,14 @@ _{self.choice}_{self.volume}.parquet"
              for _ in range(int(self.n/df.shape[0]))],
             ignore_index=True,
         )
+        if self.df_mock.shape[0] < self.n:
+            self.df_mock = pd.concat(
+                [self.df_mock, df.apply(
+                    lambda a: a.sample(
+                        frac=1).values).sample(
+                    self.n - self.df_mock.shape[0])],
+                ignore_index=True,
+            )
         return self.df_mock
 
     def splitByPipe(self, data):
