@@ -176,6 +176,13 @@ _{self.choice}_{self.volume}.{self.format}')
         with self.assertRaises(ValueError):
             self.data_gen.checkFormat(date_format)
 
+    def test_conf_file(self):
+        with self.assertRaises(ValueError):
+            self.data_gen.checkFormat(DataGenerator(
+                volume=1000, file="test_data",
+                conf_file=r'tests/test_assect/test_conf_ng.csv',
+                format="csv", choice="m"))
+
     def test_clock(self):
         # Create a DataGenerator instance
         data_gen = DataGenerator(volume=1000, file="test_data",
@@ -219,7 +226,7 @@ _{data_gen.choice}_{data_gen.volume}.{data_gen.outputFormat}')
         # Check that the returned DataFrame has the correct
         # number of rows and columns
         # Replace with the expected shape of the DataFrame
-        expected_shape = (100, 16)
+        expected_shape = (100, 18)
         assert df.shape == expected_shape
 
         # Check that the unique index columns have unique values
@@ -306,7 +313,7 @@ _{data_gen.choice}_{data_gen.volume}.{data_gen.outputFormat}')
     def test_generate_mock_data(self, mock_output, mock_genMockData,
                                 mock_generateWithConf):
         # Create a DataGenerator instance with mock values
-        data_gen = DataGenerator(volume=self.volume, file=self.file,
+        data_gen = DataGenerator(volume=20000, file=self.file,
                                  conf_file=self.conf_file, format=self.format,
                                  choice=self.choice)
 

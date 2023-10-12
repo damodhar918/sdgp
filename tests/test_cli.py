@@ -102,3 +102,27 @@ _{mode}_{records}.{file_format}')
                 assert True
             else:
                 assert False
+
+
+def test_main_mock_data_and_edit():
+    mock_file_name = r'tests/test_assect/test_data.csv'
+    mock_file_outfile = mock_file_name.split('.csv')[0] \
+        if mock_file_name.strip().endswith('.csv') else mock_file_name
+    conf_file = r'tests/test_assect/test_conf.csv'
+    file_format = 'csv'
+    mode = 'e'
+    records = str(1500)
+    with patch.object(sys, 'argv', ['sdgp', '-c', mode, records, file_format,
+                                    mock_file_name,
+                                    conf_file]):
+        with patch('sys.stdout', new=io.StringIO()) as fake_output:
+            main()
+            assert f'File has been saved as {mock_file_outfile}\
+_{mode}_{records}.{file_format}! Time taken: ' in fake_output.getvalue()
+            if os.path.exists(f'{mock_file_outfile}\
+_{mode}_{records}.{file_format}'):
+                os.remove(f'{mock_file_outfile}\
+_{mode}_{records}.{file_format}')
+                assert True
+            else:
+                assert False

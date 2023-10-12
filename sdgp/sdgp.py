@@ -91,6 +91,18 @@ class DataGenerator:
             self.conf_df = self.checkFile(self.conf_file_path)
             self.conf_dict = self.conf_df.to_dict(
                 orient='index')  # Configuration dictionary
+            self.conf_types = {x.get('type') for x in self.conf_dict.values()}
+            self.allowed_types = [
+                'uniqueIndex', 'dateRange', 'date', 'category',
+                'constant', 'floatRange', 'intRange', 'constant',
+                'time', 'dependentDateRange', 'composite',
+                'regexPattern'
+            ]
+            for x in self.conf_types:
+                if x not in self.allowed_types:
+                    raise ValueError(
+                        f"Invalid input '{x}' type in conf csv file. \
+Allowed types are '{', '.join(self.allowed_types)}'")
 
     @property
     def clock(self):
@@ -123,7 +135,6 @@ class DataGenerator:
             return df
         except Exception as e:
             raise SystemExit(e)
-
 
     def generateDates(self, s, e, format) -> list:
         """
@@ -283,25 +294,6 @@ genterate random date between next (1) day to next \
         Returns:
             pd.DataFrame: The mock DataFrame with generated data.
         """
-        if unique:
-            # df = pd.DataFrame()
-            for column, start_number in self.uniqueIndexs:
-                start_number = int(start_number)
-                self.df_mock[column] = np.arange(
-                    start_number, start_number + self.n)
-            for column, data in self.dependentDateRanges:
-                preDate, so, eo, format = self.splitByPipe(data)
-                if self.checkDuration(so, eo) and self.checkFormat(format):
-                    self.df_mock[column] = pd.to_datetime(
-                        self.df_mock[preDate]).apply(
-                            lambda x: self.addRandomDuration(
-                                x, so, eo, format))
-            for column, data in self.composites:
-                keys = self.splitByPipe(data)
-                self.df_mock[column] = self.df_mock[keys].astype('str')\
-                    .sum(1).apply(lambda x: hashlib.sha1(
-                        x.encode()).hexdigest())
-            return self.df_mock
         self.uniqueIndexs = self.getByType("uniqueIndex")
         self.dateRanges = self.getByType("dateRange")
         self.dates = self.getByType("date")
@@ -314,26 +306,78 @@ genterate random date between next (1) day to next \
         self.dependentDateRanges = self.getByType("dependentDateRange")
         self.composites = self.getByType("composite")
         self.regexPatterns = self.getByType("regexPattern")
+        if unique:
+            for column, start_number in self.uniqueIndexs:
+                print(f"Generating unique index for '{column}' starting \
+value {start_number}", self.clock)
+                start_number = int(start_number)
+                self.df_mock[column] = np.arange(
+                    start_number, start_number + self.n)
+            for column, data in self.dependentDateRanges:
+                print(f"Generating dependent dates data for '{column}' \
+with '{data}'", self.clock)
+                preDate, so, eo, format = self.splitByPipe(data)
+                if self.checkDuration(so, eo) and self.checkFormat(format):
+                    self.df_mock[column] = pd.to_datetime(
+                        self.df_mock[preDate]).apply(
+                            lambda x: self.addRandomDuration(
+                                x, so, eo, format))
+            for column, data in self.composites:
+                keys = self.splitByPipe(data)
+                print(f"Generating composite key data for '{column}' with \
+{keys}", self.clock)
+                self.df_mock[column] = self.df_mock[keys].astype('str')\
+                    .sum(1).apply(lambda x: hashlib.sha1(
+                        x.encode()).hexdigest())
+            return self.df_mock
         for column, start_number in self.uniqueIndexs:
             start_number = int(start_number)
             self.df_mock[column] = np.arange(
                 start_number, start_number + self.n)
         for column, date in self.dates:
-            date, format = self.splitByPipe(date)
-            self.df_mock[column] = pd.to_datetime(date).strftime(format)
+            date, formate = self.splitByPipe(date)
+            print(f"Generating date data for '{column}' with '{date}\
+' and format '{formate}'", self.clock)
+            self.df_mock[column] = pd.to_datetime(date).strftime(formate)
         for column, data in self.categories:
-            suffle_data = self.splitByPipe(data)
-            self.df_mock[column] = np.random.choice(suffle_data, self.n)
+            if '~' in data:
+                data, p = data.split("~")
+                suffle_data = self.splitByPipe(data)
+                p = [*map(float, self.splitByPipe(p))]
+                if sum(p) == 1:
+                    print(f"Generating category data for '{column}' \
+with '{suffle_data}' and probabilities per value {p}",
+                          self.clock)
+                    self.df_mock[column] = np.random.choice(
+                        suffle_data, self.n, p=p)
+                else:
+                    raise ValueError(              # pragma: no cover
+                        f"Sum of probability must be 1. in '{column}' \
+category type column in conf.csv file eg: 'A|B~0.5|0.5' or \
+'A|B|C|D~0.2|0.1|0.5|0.2'")
+            else:
+                suffle_data = self.splitByPipe(data)
+                print(f"Generating category data for '{column}' \
+with '{suffle_data}'", self.clock)
+                self.df_mock[column] = np.random.choice(suffle_data, self.n)
+
         for column, data in self.floatRanges:
             s, e, precision = [*map(float, self.splitByPipe(data))]
+            print(f"Generating float data for '{column}' between {s} to {e} \
+with precession {int(precision)}", self.clock)
             self.df_mock[column] = np.round(
                 np.random.uniform(s, e, self.n), int(precision))
         for column, data in self.intRanges:
             s, e = [*map(int, self.splitByPipe(data))]
+            print(f"Generating integer data for '{column}' between {s} to {e}",
+                  self.clock)
             self.df_mock[column] = np.random.randint(s, e, self.n)
         for column, data in self.constants:
+            print(f"Assingning constant to '{column}' with '{data}'",
+                  self.clock)
             self.df_mock[column] = data
         for column, data in self.times:
+            print(f"Generating times for '{column}' with '{data}'", self.clock)
             s, e, format = self.splitByPipe(data)
             random_dates = [datetime.now() + timedelta(
                 hours=random.randint(0, 24),
@@ -342,21 +386,28 @@ genterate random date between next (1) day to next \
             self.df_mock[column] = [pd.to_datetime(
                 date).strftime(format) for date in random_dates]
         for column, data in self.dateRanges:
+            print(f"Generating dates for '{column}' with '{data}'", self.clock)
             s, e, format = self.splitByPipe(data)
             self.df_mock[column] = self.generateDates(s, e, format)
         for column, data in self.dependentDateRanges:
+            print(f"Generating dates for '{column}' with '{data}'", self.clock)
             preDate, so, eo, format = self.splitByPipe(data)
             if self.checkDuration(so, eo) and self.checkFormat(format):
                 self.df_mock[column] = pd.to_datetime(
                     self.df_mock[preDate]).apply(
                     lambda x: self.addRandomDuration(x, so, eo, format))
         for column, data in self.regexPatterns:
+            print(f"Generating regex pattern data for '{column}' with \
+'{data}'", self.clock)
             self.df_mock[column] = self.df_mock.iloc[:, 0].apply(
                 lambda x: exrex.getone(data))
         for column, data in self.composites:
+            print(f"Generating composite data for '{column}' with '{data}'",
+                  self.clock)
             keys = self.splitByPipe(data)
             self.df_mock[column] = self.df_mock[keys].astype('str')\
                 .sum(1).apply(lambda x: hashlib.sha1(x.encode()).hexdigest())
+
         return self.df_mock
 
     def output(self):
@@ -374,8 +425,8 @@ genterate random date between next (1) day to next \
         Generates mock data based on the given configuration and saves it.
         """
         self.df_mock = pd.DataFrame()
-        if self.volume > 10000:
-            print("Generated data...",
+        if self.volume > 15000:
+            print("Genering data...",
                   self.clock.strip(" ;"))
             self.df_mock = self.generateWithConf()
             self.genMockData(self.df_mock)
@@ -391,7 +442,7 @@ genterate random date between next (1) day to next \
         and saves it.
         """
         df = self.checkFile(self.csv_file_path)
-        print("Generated data...", self.clock.strip(" ;"))
+        print("Genering data...", self.clock.strip(" ;"))
         self.genMockData(df)
         self.generateWithConf()
         self.output()
@@ -402,6 +453,6 @@ genterate random date between next (1) day to next \
         on the existing data, and saves it.
         """
         df = self.checkFile(self.csv_file_path)
-        print("Generated data...", self.clock.strip(" ;"))
+        print("Genering data...", self.clock.strip(" ;"))
         self.genMockData(df)
         self.output()
