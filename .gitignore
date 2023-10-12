@@ -4,6 +4,10 @@ __pycache__/
 *$py.class
 #notebook
 *.ipynb
+# tempfiles
+*temp*
+*0.csv
+*.0.parquet
 # C extensions
 *.so
 #outuput

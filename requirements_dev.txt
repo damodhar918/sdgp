@@ -10,4 +10,4 @@ twine
 pandas
 pyarrow
 exrex
-
+pytest-cov

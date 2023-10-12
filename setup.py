@@ -10,9 +10,9 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['pandas']
+requirements = []
 
-test_requirements = ['pytest']
+test_requirements = []
 
 setup(
     author="Damodhar Jangam",

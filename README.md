@@ -142,5 +142,5 @@ id1,date1,model1,probability1,float1,number1,test1,time1,dateRange1,incometime2,
 ## License
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 ## Acknowledgments
-If you have any questions, feedback, or suggestions, please feel free to contact me at damodhar.jangam@wellsfargo.com. You can also open an issue or submit a pull request on GitHub if you want to contribute to this project.
+If you have any questions, feedback, or suggestions, please feel free to contact me at damodhar918@outlook.com. You can also open an issue or submit a pull request on GitHub if you want to contribute to this project.
 I hope you find this project useful and interesting. Thank you for reading! 😊
