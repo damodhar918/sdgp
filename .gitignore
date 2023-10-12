@@ -13,7 +13,7 @@ __pycache__/
 #outuput
 *0.csv
 # Distribution / packaging
-.github
+# .github
 .Python
 env/
 build/

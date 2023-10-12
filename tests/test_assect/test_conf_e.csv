@@ -1,0 +1,8 @@
+name,type,values
+id1,uniqueIndex,800000000000000000000000000000
+outcometime3,dependentDateRange,incometime2|1D|3W|%Y-%m-%d %H:%M:%S
+name1,regexPattern,"([a-z]{3,10})\, ([a-z]{3,10})"
+phone_number,regexPattern,"(\+[4-9]{2,3})\-([4-9]{5})\-([4-9]{5})"
+zip_code,regexPattern,([4-9]{5})
+email_address,regexPattern,"([a-zA-Z0-9]{1,10})\@[a-z]{1,5}\.(com|net|org|in)"
+compositeKey1,composite,dateRange1|model1|number1|phone_number|zip_code

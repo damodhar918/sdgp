@@ -1,5 +1,8 @@
 ## Utilization [Synthetic data generator plus]() Project
-For questions on this package contact the package Developer Damodhar Jangam at
+
+[![Python application](https://github.com/damodhar918/sdgp/actions/workflows/python-app.yml/badge.svg)](https://github.com/damodhar918/sdgp/actions/workflows/python-app.yml) [![codecov](https://codecov.io/github/damodhar918/sdgp/graph/badge.svg?token=MHZTS92Y4I)](https://codecov.io/github/damodhar918/sdgp)
+
+For questions on this package contact the package Developer Damodhar Jangam at damodhar918@outlook.com
 ## Overview
 This project [Synthetic data generator plus]() is a python script that generates mock data based on given configurations. It can also edit and scale existing data to create high volume data. It is useful for testing and prototyping purposes.
 ## Features
