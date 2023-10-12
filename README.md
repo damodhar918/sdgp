@@ -1,6 +1,6 @@
 ## Utilization [Synthetic data generator plus]() Project
 
-[![Python application](https://github.com/damodhar918/sdgp/actions/workflows/python-app.yml/badge.svg)](https://github.com/damodhar918/sdgp/actions/workflows/python-app.yml) [![codecov](https://codecov.io/github/damodhar918/sdgp/graph/badge.svg?token=MHZTS92Y4I)](https://codecov.io/github/damodhar918/sdgp)
+[![Python application](https://github.com/damodhar918/sdgp/actions/workflows/python-app.yml/badge.svg)](https://github.com/damodhar918/sdgp/actions/workflows/python-app.yml) [![codecov](https://codecov.io/github/damodhar918/sdgp/graph/badge.svg?token=MHZTS92Y4I)](https://codecov.io/github/damodhar918/sdgp) [![Unit Tests](https://github.com/damodhar918/sdgp/actions/workflows/unittest.yml/badge.svg?branch=main)](https://github.com/damodhar918/sdgp/actions/workflows/unittest.yml)
 
 For questions on this package contact the package Developer Damodhar Jangam at <damodhar918@outlook.com>
 
@@ -15,6 +15,7 @@ This project [Synthetic data generator plus]() is a python script that generates
 - Configuration rules include generating unique indices, fixed or random dates/times, categorical values, float values within a range, integer values within a range, or constant values.
 - Generate high volume data
 - Save a DataFrame in CSV and Parquet file formats
+- Futher can ingest into SQL server, HDFS, Hive, HBase, Kafka, etc.
 
 ## Package Installation
 
