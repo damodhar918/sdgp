@@ -31,7 +31,7 @@ PS > python -m venv .venv
 PS > .\.venv\Scripts\activate
 PS > pip install -r requirements.txt
 PS > python setup.py install
-# You can utilize a package in this case by invoking sdgp.
+# You can utilize the package in this case by invoking sdgp.
 PS > sdgp -h
 # Before proceeding, please review the usage section.
 PS > sdgp -c m 1000000 csv test test_conf.csv
@@ -51,7 +51,7 @@ $ python3 -m venv .venv
 $ source .venv/bin/activate
 $ pip install -r requirements.txt
 $ python setup.py install
-# You can utilize a package in this case by invoking sdgp.
+# You can utilize the package in this case by invoking sdgp.
 $ sdgp -h
 # Before proceeding, please review the usage section.
 $ sdgp -c m 1000000 csv test test_conf.csv
