@@ -61,10 +61,7 @@ is required if mode is e or g.")
         print(
             " If you have any suggestion/question/errors ping Damodhar Jangam \
 will update in next release.                           ",
-            sep=Fore.CYAN + "#\n# " + Fore.WHITE,
-            end='')
-        print(
-            "Doc link : https://damodhar918.github.io/sdgp/                   \
+            "Doc link : https://damodhar918.github.io/sdgp/                  \
                                                        ",
             sep=Fore.CYAN + "#\n# " + Fore.WHITE,
             end='')
