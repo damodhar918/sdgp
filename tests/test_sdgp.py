@@ -203,8 +203,9 @@ _{data_gen.choice}_{data_gen.volume}.{data_gen.outputFormat}')
         end_time = time.time()
         # Check if the clock property returns a string that reflects
         # the execution time
-        expected_clock = f"; Time taken: \
-{time.strftime('%X', time.gmtime(end_time - start_time))}"
+        expected_clock = f":: Time taken: \x1b[31m\
+{time.strftime('%X', time.gmtime(end_time - start_time))}\x1b[0m"
+        expected_clock = f"{expected_clock}"
         self.assertEqual(data_gen.clock, expected_clock)
 
     def test_generate_with_conf(self):
@@ -292,7 +293,7 @@ _{data_gen.choice}_{data_gen.volume}.{data_gen.outputFormat}')
                                  format="csv", choice="m")
 
         # Call the output method and check if the saveInCSV method is called
-        data_gen.output()
+        data_gen.generateMockData()
         mock_saveInCSV.assert_called_once()
 
     @patch('sdgp.sdgp.DataGenerator.saveInParquet')
@@ -304,7 +305,7 @@ _{data_gen.choice}_{data_gen.volume}.{data_gen.outputFormat}')
 
         # Call the output method and check if the
         # saveInParquet method is called
-        data_gen.output()
+        data_gen.generateMockData()
         mock_saveInParquet.assert_called_once()
 
     @patch('sdgp.sdgp.DataGenerator.generateWithConf')

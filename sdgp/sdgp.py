@@ -84,14 +84,14 @@ class DataGenerator:
         self.volume = int(volume)  # Number of rows to volume
         self.file = file.split('.csv')[0] \
             if file.strip().endswith('.csv') else file
-        if conf_file.strip().endswith('.csv') == file.strip().endswith('.csv'):
-            self.file = self.file+'_'
         self.csv_file_path = file.strip()  # to read CSV file path
         self.start_time = time.time()
         self.outputFormat = format
         self.choice = choice
         if conf_file:
-
+            if conf_file.strip().split('.csv')[0] == file.strip().\
+                    split('.csv')[0]:
+                self.file = self.file+'_'
             self.conf_file_path = conf_file.strip()
             self.conf_df = self.checkFile(self.conf_file_path)
             self.conf_dict = self.conf_df.to_dict(
