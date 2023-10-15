@@ -63,6 +63,11 @@ is required if mode is e or g.")
 will update in next release.                           ",
             sep=Fore.CYAN + "#\n# " + Fore.WHITE,
             end='')
+        print(
+            "Doc link : https://damodhar918.github.io/sdgp/                   \
+                                                       ",
+            sep=Fore.CYAN + "#\n# " + Fore.WHITE,
+            end='')
         print(Fore.CYAN + '#'+Fore.WHITE,)
         print(Fore.CYAN + '#'*LENGTH+Fore.WHITE)
     # Use the choice argument to select a function from your class

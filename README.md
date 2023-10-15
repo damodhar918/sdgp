@@ -31,10 +31,9 @@ PS > python -m venv .venv
 PS > .\.venv\Scripts\activate
 PS > pip install -r requirements.txt
 PS > python setup.py install
-# you can use package here by calling sdgp
+# You can utilize a package in this case by invoking sdgp.
 PS > sdgp -h
-# try to go through the usage section/ help section
-# then you can use package here by calling sdgp
+# Before proceeding, please review the usage section.
 PS > sdgp -c m 1000000 csv test test_conf.csv
 PS > sdgp -c e 1000000 parquet test test_conf.csv
 PS > deactivate # when you need exit
@@ -52,24 +51,22 @@ $ python3 -m venv .venv
 $ source .venv/bin/activate
 $ pip install -r requirements.txt
 $ python setup.py install
-# you can use package here by calling sdgp
+# You can utilize a package in this case by invoking sdgp.
 $ sdgp -h
-# try to go through the usage section/ help section
-# then you can use package here by calling sdgp
+# Before proceeding, please review the usage section.
 $ sdgp -c m 1000000 csv test test_conf.csv
 $ sdgp -c e 1000000 parquet test test_conf.csv
 $ deactivate # when you need exit
 ```
 
-At that point you're good to go and the package `Synthetic data generater plus` and its module will be
-available for use in your virtual environment.
+You are nowready to proceed, as the package `Synthetic data generator plus` has been installed and is now available for utilization within your virtual environment.
 
 ## Usage
 
 To run the script, you need to provide some arguments:
 
 - `-c` or `--choice`: The type of function to select. `m` for mock data, `e` for edit mock data, `g` for generate high volume data.
-- `volume`: The size. An integer value that specifies how many rows to generate mock data. Recommended minimum value is more than volume size or more than 1000.
+- `volume`: The size. An integer value that specifies how many rows/records to generate mock data. Recommended minimum value more than 1000.
 - `format`: The type of format to save the mock data. `csv` for CSV format, `parquet` for Parquet format.
 - `csv_file`: The CSV file name. A string value that specifies the name of the CSV file to read if there or to write output.
 - `conf_csv_file`: The configuration CSV file name. A string value that specifies the name of the configuration CSV file to read. This argument is required if mode is `e` or `g`.
@@ -118,7 +115,7 @@ email_address,regexPattern,"([a-zA-Z0-9]{1,10})\@[a-z]{1,5}\.(com|net|org|in)"
 compositeKey1,composite,dateRange1|model1|number1|phone_number|zip_code
 ```
 
-Explanation of above file:
+Explanation of data patterns as per defined in the configuration file :
 
 - `uniqueIndex`: This indicates that the `id1` column should contain unique and sequential values,here it's starting from `800000000000000000000000000000`.
 - `date`: This indicates that the `date1` column should contain a fixed date value (`2022-10-26`) for all rows. `%Y-%m-%d` format is used.
@@ -134,8 +131,11 @@ Explanation of above file:
 - `regexPattern`: This indicates that the `name1` column should contain a fixed pattren range value (`([a-z]{3,10})\, ([a-z]{3,10})`) for all records. The`phone_number` column should contain a fixed length phone number value (`(\+[4-9]{2,3})\-([1-9]{5})\-([1-9]{5})`) for all records. The `zip_code` column should contain a fixed length zip code value (`([4-9]{5})`) for all records. `email_address` column should contain a fixed length email address value (`([a-zA-Z0-9]{1,10})\@[a-z]{1,5}\.(com|net|org|in)`) for all records. For more regex pattren check [here](https://docs.python.org/3/howto/regex.html#simple-patterns) and play around with it.
 **Note:** regexPattern takes long time to generate data.
 - `composite`: This indicates that the `compositeKey1` column should contain sha256 hashed value from these combinations: `dateRange1|model1|number1|phone_number|zip_code`
+
 Each row in this CSV file defines a rule for generating or handling data in a specific column of another dataset. The rules include generating unique indices, fixed or random dates/times, categorical values, float values within a range, integer values within a range, or constant values.
+
 datetime formats you can use in the script:
+
 - `%a`: Weekday as locale’s abbreviated name. Example: Mon
 - `%A`: Weekday as locale’s full name. Example: Monday
 - `%w`: Weekday as a decimal number, where 0 is Sunday and 6 is Saturday. Example: 1

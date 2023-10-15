@@ -35,8 +35,10 @@ import time
 from datetime import datetime, timedelta
 import pyarrow as pa
 import pyarrow.parquet as pq
-import sys
+# import sys
 import exrex
+PADDING_LENGTH = 107
+ADDITIONAL_PADDING = 9
 
 
 class DataGenerator:
@@ -81,17 +83,22 @@ class DataGenerator:
         self.n = int(volume)  # Number of rows to generate
         self.volume = int(volume)  # Number of rows to volume
         self.file = file.split('.csv')[0] \
-            if file.strip().endswith('.csv') else file  # File name to generate
+            if file.strip().endswith('.csv') else file
+        if conf_file.strip().endswith('.csv') == file.strip().endswith('.csv'):
+            self.file = self.file+'_'
         self.csv_file_path = file.strip()  # to read CSV file path
         self.start_time = time.time()
         self.outputFormat = format
         self.choice = choice
         if conf_file:
+
             self.conf_file_path = conf_file.strip()
             self.conf_df = self.checkFile(self.conf_file_path)
             self.conf_dict = self.conf_df.to_dict(
                 orient='index')  # Configuration dictionary
             self.conf_types = {x.get('type') for x in self.conf_dict.values()}
+            self.conf_columns = [x.get('name') for x in
+                                 self.conf_dict.values()]
             self.allowed_types = [
                 'uniqueIndex', 'dateRange', 'date', 'category',
                 'constant', 'floatRange', 'intRange', 'constant',
@@ -106,8 +113,8 @@ Allowed types are '{', '.join(self.allowed_types)}'")
 
     @property
     def clock(self):
-        return f"; Time taken: \
-{time.strftime('%X', time.gmtime(time.time() - self.start_time))}"
+        return f":: Time taken: \
+{self.colorLiteral(time.strftime('%X', time.gmtime(time.time() - self.start_time)))}"
 
     def checkDate(self, date):
         """
@@ -131,7 +138,8 @@ Allowed types are '{', '.join(self.allowed_types)}'")
     def checkFile(self, path) -> pd.DataFrame:
         try:
             df = pd.read_csv(path).rename(columns=lambda x: x.split(".")[-1])
-            print(f"Fetched the file {path}!", self.clock.strip(" ;"))
+            print(f"Fetched the file {self.colorLiteral(path)} !".ljust(
+                PADDING_LENGTH, " "), self.clock)
             return df
         except Exception as e:
             raise SystemExit(e)
@@ -169,8 +177,10 @@ Allowed types are '{', '.join(self.allowed_types)}'")
 _{self.choice}_{self.volume}.csv"
         df.to_csv(self.mock_file_csv_path, index=False, header=True)
         print(
-            f"File has been saved as { self.mock_file_csv_path}!",
-            self.clock.strip(" ;"))
+            f"File has been saved as \
+{ self.colorLiteral(self.mock_file_csv_path)} !".ljust(
+                PADDING_LENGTH, " "),
+            self.clock)
 
     def saveInParquet(self):
         """
@@ -187,7 +197,8 @@ _{self.choice}_{self.volume}.parquet"
                        compression="snappy")
         print(
             f"File has been saved as \
-{ self.mock_file_parquet_path}!", self.clock.strip(" ;"))
+{self.colorLiteral(self.mock_file_parquet_path)} !".
+            ljust(PADDING_LENGTH, " "), self.clock)
 
     def genMockData(self, df) -> pd.DataFrame:
         """
@@ -295,10 +306,15 @@ genterate random date between next (1) day to next \
             unit='s')
         return (start_date + random_duration).strftime(format)
 
+    def colorLiteral(self, value):
+        return f"\033[31m{value}\033[0m"
+
     def generateWithConf(self, unique=False) -> pd.DataFrame:
         """
-        Generates mock data for different types of configuration items and
-        assigns them to columns in the mock DataFrame.
+        Generates mock data for different types of configuration
+        items and assigns them to columns
+        in the mock DataFrame.
+
         Returns:
             pd.DataFrame: The mock DataFrame with generated data.
         """
@@ -314,107 +330,164 @@ genterate random date between next (1) day to next \
         self.dependentDateRanges = self.getByType("dependentDateRange")
         self.composites = self.getByType("composite")
         self.regexPatterns = self.getByType("regexPattern")
+
         if unique:
             for column, start_number in self.uniqueIndexs:
-                print(f"Generating unique index for '{column}' starting \
-value {start_number}", self.clock)
+                print(f"Generating unique index for '\
+{self.colorLiteral(column)}' starting value {self.colorLiteral(start_number)}"
+                      .ljust(PADDING_LENGTH + ADDITIONAL_PADDING, " "),
+                      self.clock)
                 start_number = int(start_number)
                 self.df_mock[column] = np.arange(
                     start_number, start_number + self.n)
+
             for column, data in self.dependentDateRanges:
-                print(f"Generating dependent dates data for '{column}' \
-with '{data}'", self.clock)
                 preDate, so, eo, format = self.splitByPipe(data)
+                print(f"Generating dependent dates data for '\
+{self.colorLiteral(column)}' with '{self.colorLiteral(data)}'".ljust(
+                    PADDING_LENGTH + ADDITIONAL_PADDING, " "),
+                    self.clock)
                 if self.checkDuration(so, eo) and self.checkFormat(format):
                     self.df_mock[column] = pd.to_datetime(
-                        self.df_mock[preDate]).apply(
-                            lambda x: self.addRandomDuration(
-                                x, so, eo, format))
+                        self.df_mock[preDate]
+                    ).apply(lambda x: self.addRandomDuration(
+                        x, so, eo, format))
+
             for column, data in self.composites:
                 keys = self.splitByPipe(data)
-                print(f"Generating composite key data for '{column}' with \
-{keys}", self.clock)
-                self.df_mock[column] = self.df_mock[keys].astype('str')\
-                    .sum(1).apply(lambda x: hashlib.sha1(
-                        x.encode()).hexdigest())
+                print(f"Generating composite key data for '\
+{self.colorLiteral(column)}' with {self.colorLiteral(keys)}".ljust(
+                    PADDING_LENGTH, " "),
+                    self.clock)
+                self.df_mock[column] = self.df_mock[keys].astype(
+                    'str').sum(1).apply(
+                    lambda x: hashlib.sha1(x.encode()).hexdigest())
             return self.df_mock
+
         for column, start_number in self.uniqueIndexs:
+            print(f"Generating unique index for '\
+{self.colorLiteral(column)}' starting value {self.colorLiteral(start_number)}".
+                  ljust(PADDING_LENGTH+ADDITIONAL_PADDING, " "), self.clock)
             start_number = int(start_number)
             self.df_mock[column] = np.arange(
                 start_number, start_number + self.n)
+
         for column, date in self.dates:
             date, formate = self.splitByPipe(date)
-            print(f"Generating date data for '{column}' with '{date}\
-' and format '{formate}'", self.clock)
+            print(f"Generating date data for '{self.colorLiteral(column)}' \
+with '{self.colorLiteral(date)}' and format '{self.colorLiteral(formate)}'".
+                  ljust(PADDING_LENGTH+ADDITIONAL_PADDING*2, " "), self.clock)
             self.df_mock[column] = pd.to_datetime(date).strftime(formate)
+
         for column, data in self.categories:
             if '~' in data:
                 data, p = data.split("~")
                 suffle_data = self.splitByPipe(data)
                 p = [*map(float, self.splitByPipe(p))]
                 if sum(p) == 1:
-                    print(f"Generating category data for '{column}' \
-with '{suffle_data}' and probabilities per value {p}",
+                    print(f"Generating category data for '\
+{self.colorLiteral(column)}' with '{self.colorLiteral(suffle_data)}' \
+and probabilities per value {self.colorLiteral(p)}"
+                          .ljust(PADDING_LENGTH + ADDITIONAL_PADDING, " "),
                           self.clock)
                     self.df_mock[column] = np.random.choice(
-                        suffle_data, self.n, p=p)
+                        suffle_data, self.n, p=p
+                    )
                 else:
-                    raise ValueError(              # pragma: no cover
-                        f"Sum of probability must be 1. in '{column}' \
-category type column in conf.csv file eg: 'A|B~0.5|0.5' or \
-'A|B|C|D~0.2|0.1|0.5|0.2'")
+                    raise ValueError(
+                        f"Sum of probability must be 1. in '"
+                        f"{self.colorLiteral(column)}' category type column in"
+                        f" conf.csv file eg: 'A|B~0.5|0.5' or "
+                        f"'A|B|C|D~0.2|0.1|0.5|0.2'"
+                    )
             else:
                 suffle_data = self.splitByPipe(data)
-                print(f"Generating category data for '{column}' \
-with '{suffle_data}'", self.clock)
+                print(f"Generating category data for '\
+{self.colorLiteral(column)}' with '{self.colorLiteral(suffle_data)}'"
+                      .ljust(PADDING_LENGTH + ADDITIONAL_PADDING, " "),
+                      self.clock)
                 self.df_mock[column] = np.random.choice(suffle_data, self.n)
 
         for column, data in self.floatRanges:
             s, e, precision = [*map(float, self.splitByPipe(data))]
-            print(f"Generating float data for '{column}' between {s} to {e} \
-with precession {int(precision)}", self.clock)
+            print(f"Generating float data for '{self.colorLiteral(column)}' \
+between {self.colorLiteral(s)} to {self.colorLiteral(e)} with \
+precision {self.colorLiteral(int(precision))} decimals".ljust(
+                PADDING_LENGTH + ADDITIONAL_PADDING*3, " "),
+                self.clock)
             self.df_mock[column] = np.round(
-                np.random.uniform(s, e, self.n), int(precision))
+                np.random.uniform(s, e, self.n), int(precision)
+            )
+
         for column, data in self.intRanges:
             s, e = [*map(int, self.splitByPipe(data))]
-            print(f"Generating integer data for '{column}' between {s} to {e}",
-                  self.clock)
+            print(f"Generating integer data for '{self.colorLiteral(column)}' \
+between {self.colorLiteral(s)} to {self.colorLiteral(e)}".ljust(
+                PADDING_LENGTH + ADDITIONAL_PADDING*2, " "),
+                self.clock)
             self.df_mock[column] = np.random.randint(s, e, self.n)
+
         for column, data in self.constants:
-            print(f"Assingning constant to '{column}' with '{data}'",
-                  self.clock)
+            print(f"Assingning constant to '{self.colorLiteral(column)}' with \
+'{self.colorLiteral(data)}'".ljust(
+                PADDING_LENGTH + ADDITIONAL_PADDING, " "), self.clock)
             self.df_mock[column] = data
+
         for column, data in self.times:
-            print(f"Generating times for '{column}' with '{data}'", self.clock)
+            print(f"Generating times for '{self.colorLiteral(column)}' with \
+'{self.colorLiteral(data)}'".ljust(
+                PADDING_LENGTH + ADDITIONAL_PADDING, " "), self.clock)
             s, e, format = self.splitByPipe(data)
-            random_dates = [datetime.now() + timedelta(
-                hours=random.randint(0, 24),
-                minutes=random.randint(0, 60),
-                seconds=random.randint(0, 60)) for _ in range(self.n)]
-            self.df_mock[column] = [pd.to_datetime(
-                date).strftime(format) for date in random_dates]
+            random_dates = [
+                datetime.now()
+                + timedelta(
+                    hours=random.randint(0, 24),
+                    minutes=random.randint(0, 60),
+                    seconds=random.randint(0, 60),
+                )
+                for _ in range(self.n)
+            ]
+            self.df_mock[column] = [
+                pd.to_datetime(date).strftime(format) for date in random_dates
+            ]
+
         for column, data in self.dateRanges:
-            print(f"Generating dates for '{column}' with '{data}'", self.clock)
+            print(f"Generating dates for '{self.colorLiteral(column)}' with \
+'{self.colorLiteral(data)}'".ljust(
+                PADDING_LENGTH + ADDITIONAL_PADDING, " "), self.clock)
             s, e, format = self.splitByPipe(data)
             self.df_mock[column] = self.generateDates(s, e, format)
+
         for column, data in self.dependentDateRanges:
-            print(f"Generating dates for '{column}' with '{data}'", self.clock)
+            print(f"Generating dates for '{self.colorLiteral(column)}' with \
+'{self.colorLiteral(data)}'".ljust(
+                PADDING_LENGTH + ADDITIONAL_PADDING, " "), self.clock)
             preDate, so, eo, format = self.splitByPipe(data)
             if self.checkDuration(so, eo) and self.checkFormat(format):
                 self.df_mock[column] = pd.to_datetime(
-                    self.df_mock[preDate]).apply(
-                    lambda x: self.addRandomDuration(x, so, eo, format))
+                    self.df_mock[preDate]
+                ).apply(lambda x: self.addRandomDuration(x, so, eo, format))
+
         for column, data in self.regexPatterns:
-            print(f"Generating regex pattern data for '{column}' with \
-'{data}'", self.clock)
+            print(
+                f"Generating regex pattern data for '\
+{self.colorLiteral(column)}' with '{self.colorLiteral(data)}'".ljust(
+                    PADDING_LENGTH + ADDITIONAL_PADDING, " "),
+                self.clock,
+            )
             self.df_mock[column] = self.df_mock.iloc[:, 0].apply(
-                lambda x: exrex.getone(data))
+                lambda x: exrex.getone(data)
+            )
+
         for column, data in self.composites:
-            print(f"Generating composite data for '{column}' with '{data}'",
+            print(f"Generating composite data for '{self.colorLiteral(column)}\
+' with '{self.colorLiteral(data)}'".ljust(PADDING_LENGTH, " "),
                   self.clock)
             keys = self.splitByPipe(data)
-            self.df_mock[column] = self.df_mock[keys].astype('str')\
-                .sum(1).apply(lambda x: hashlib.sha1(x.encode()).hexdigest())
+            self.df_mock[column] = self.df_mock[keys].astype('str').sum(1)\
+                .apply(
+                lambda x: hashlib.sha1(x.encode()).hexdigest()
+            )
 
         return self.df_mock
 
@@ -423,6 +496,8 @@ with precession {int(precision)}", self.clock)
         Checks the output format and calls the corresponding
         method to save the generated data.
         """
+        if self.conf_columns:
+            self.df_mock = self.df_mock[self.conf_columns]
         if self.outputFormat == "csv":
             self.saveInCSV()
         elif self.outputFormat == "parquet":
@@ -434,8 +509,6 @@ with precession {int(precision)}", self.clock)
         """
         self.df_mock = pd.DataFrame()
         if self.volume > 15000:
-            print("Genering data...",
-                  self.clock.strip(" ;"))
             self.df_mock = self.generateWithConf()
             self.genMockData(self.df_mock)
             self.generateWithConf(unique=True)
@@ -450,7 +523,6 @@ with precession {int(precision)}", self.clock)
         and saves it.
         """
         df = self.checkFile(self.csv_file_path)
-        print("Genering data...", self.clock.strip(" ;"))
         self.genMockData(df)
         self.generateWithConf()
         self.output()
@@ -461,6 +533,5 @@ with precession {int(precision)}", self.clock)
         on the existing data, and saves it.
         """
         df = self.checkFile(self.csv_file_path)
-        print("Genering data...", self.clock.strip(" ;"))
         self.genMockData(df)
         self.output()
