@@ -93,11 +93,11 @@ class DataGenerator:
                     split('.csv')[0]:
                 self.file = self.file+'_'
             self.conf_file_path = conf_file.strip()
-            self.conf_df = self.checkFile(self.conf_file_path)
+            self.conf_df = self.checkFile(self.conf_file_path).astype('str')
             self.conf_dict = self.conf_df.to_dict(
                 orient='index')  # Configuration dictionary
-            self.conf_types = {x.get('type') for x in self.conf_dict.values()}
-            self.conf_columns = [x.get('name') for x in
+            self.conf_types = {x.get('type').strip() for x in self.conf_dict.values()}
+            self.conf_columns = [x.get('name').strip() for x in
                                  self.conf_dict.values()]
             self.allowed_types = [
                 'uniqueIndex', 'dateRange', 'date', 'category',
@@ -172,7 +172,7 @@ Allowed types are '{', '.join(self.allowed_types)}'")
             df (pd.DataFrame): DataFrame to save.
             file_name (str): File name for the CSV file.
         """
-        df = self.df_mock.sample(self.volume).drop_duplicates()
+        df = self.df_mock
         self.mock_file_csv_path = f"{self.file}\
 _{self.choice}_{self.volume}.csv"
         df.to_csv(self.mock_file_csv_path, index=False, header=True)
@@ -189,7 +189,7 @@ _{self.choice}_{self.volume}.csv"
             df (pd.DataFrame): DataFrame to save.
             file_name (str): File name for the Parquet file.
         """
-        df = self.df_mock.sample(self.volume).drop_duplicates()
+        df = self.df_mock
         self.mock_file_parquet_path = f"{self.file}\
 _{self.choice}_{self.volume}.parquet"
         table = pa.Table.from_pandas(df, preserve_index=False)
@@ -523,6 +523,9 @@ between {self.colorLiteral(s)} to {self.colorLiteral(e)}".ljust(
         and saves it.
         """
         df = self.checkFile(self.csv_file_path)
+        if df.shape[0] > self.n:
+            raise ValueError(f"given no. of rows is greater than {self.n}")
+        self.conf_columns = [*df.columns]
         self.genMockData(df)
         self.generateWithConf()
         self.output()
@@ -533,5 +536,6 @@ between {self.colorLiteral(s)} to {self.colorLiteral(e)}".ljust(
         on the existing data, and saves it.
         """
         df = self.checkFile(self.csv_file_path)
+        self.conf_columns = [*df.columns]
         self.genMockData(df)
         self.output()

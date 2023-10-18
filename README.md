@@ -82,6 +82,7 @@ Example configuration file:
 | outcometime3  | dependentDateRange | incometime2\|1D\|3W\|%Y-%m-%d %H:%M:%S                  |
 | model1        | category           | Customers\|Lending\|Web_Lending                         |
 | model         | category           | Customers\|Lending\|Web_Lending \|                      |
+| null1         | category           | \|                      |
 | gender1       | category           | 0\|1\|~0.4\|0.5\|0.1                                    |
 | probability1  | floatRange         | 0.001\|1\|3                                             |
 | float1        | floatRange         | 0.001\|0.3\|5                                           |
@@ -103,6 +104,7 @@ incometime2,dateRange,2021-10-10 | 2022-10-26|%Y-%m-%d %H:%M:%S
 outcometime3,dependentDateRange,incometime2|1D|3W|%Y-%m-%d %H:%M:%S
 model1,category,Customers|Lending|Web_Lending
 model,category,Customers|Lending|Web_Lending|
+null1,category,
 gender1,category,0|1|~0.4|0.5|0.1
 probability1,floatRange,0.001|1|3
 float1,floatRange,0.001|0.3|5
@@ -123,8 +125,9 @@ Explanation of data patterns as per defined in the configuration file :
 - `dateRange`: This indicates that the `dateRange1` and `incometime2` columns should contain random date values within the range from `2021-10-10` to `2022-10-26`. The format of the dates in `incometime2` also includes `%Y-%m-%d %H:%M:%S`. For other formats reference given below.
 - `dependentDateRange`: This indicates that the `outcometime3` column should contain random duration values within the range from `1D` to `3W` in addition to the `incometime2`.Here `1D` means 1 day and `3W` means 3 weeks. Other compatable inputs are `10S` means 10 seconds, `5m` means 5 minutes, `2h` means 2 hours, `3d` means 3 days, `4W` means 4 weeks. The format of the dates in `outcometime3` also includes`%Y-%m-%d %H:%M:%S`. format reference given below.
 - `category`: This indicates that the `model1` column should contain random categorical values chosen from the options "Customers", "Lending", and "Web_Lending".
-**Note 1**: If you want to add empty value in the column then add `|` at the end of the values as in `model`.
-**Note 2**: : If you want categorical values with probilities then add `~` at the end of the values as in `gender1` input `0|1|~0.4|0.5|0.1`. here ~ is seperater between categorical values and probilities ["0", "1",""] ~ ["0.4", "0.5", "0.1"].
+**Note 1**: If you want to add some empty value in the column then add `|` at the end of the values as in `model`.
+**Note 2**: If you want categorical values with probilities then add `~` at the end of the values as in `gender1` input `0|1|~0.4|0.5|0.1`. here ~ is seperater between categorical values and probilities ["0", "1",""] ~ ["0.4", "0.5", "0.1"].
+**Note 3**: If you want full null/empty values in the column then add `|` at the end of the values as in `null1` column.
 - `floatRange`: This indicates that the `probability1` and `float` columns should contain random float values within a given range. The range for `probability1` is from `0.001` to `1`, with a precision of 3 decimal places. The range for `float` is from `0.001` to `0.3`, with a precision of 5 decimal places.
 - `intRange`: This indicates that the `number1` column should contain random integer values within the range from 10 to 25.
 - `constant`: This indicates that the `test1` column should contain a constant value (`Done`) for all rows.

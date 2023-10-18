@@ -10,4 +10,5 @@ twine
 pandas
 pyarrow
 exrex
+colorama
 pytest-cov
